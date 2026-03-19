@@ -1,0 +1,115 @@
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 32301
+  prometheusSpec:
+    image:
+      registry: harbor.devops.local:7581
+      repository: devops/prometheus
+      tag: v3.10.0
+    scrapeInterval: 60s
+    evaluationInterval: 60s
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-client
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+alertmanager:
+  service:
+    type: NodePort
+    nodePort: 32302
+  config:
+    global:
+      smtp_smarthost: 'smtp.163.com:25'
+      smtp_from: 'hyxt2014@163.com'
+      smtp_auth_username: 'hyxt2014@163.com'
+      smtp_auth_password: 'huayangxintong'
+      smtp_require_tls: false
+    route:
+      receiver: 'email'
+      group_by: ['alertname', 'namespace']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 24h
+      routes:
+        - receiver: 'null'
+          matchers:
+            - alertname = "Watchdog"
+    receivers:
+      - name: 'null'
+      - name: 'email'
+        email_configs:
+          - to: '13537898500@139.com'
+            send_resolved: true
+    inhibit_rules:
+      - source_matchers:
+          - severity = critical
+        target_matchers:
+          - severity =~ warning|info
+        equal: [namespace, alertname]
+  alertmanagerSpec:
+    image:
+      registry: harbor.devops.local:7581
+      repository: devops/alertmanager
+      tag: v0.31.1
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: nfs-client
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+
+grafana:
+  service:
+    type: NodePort
+    nodePort: 32300
+  image:
+    registry: harbor.devops.local:7581
+    repository: devops/grafana
+    tag: "12.4.1"
+  sidecar:
+    image:
+      registry: harbor.devops.local:7581
+      repository: devops/k8s-sidecar
+      tag: "2.5.0"
+  initChownData:
+    image:
+      registry: harbor.devops.local:7581
+      repository: devops/busybox
+      tag: "1.37.0"
+  adminPassword: Admin1234
+  persistence:
+    enabled: true
+    storageClassName: nfs-client
+    accessModes: ["ReadWriteOnce"]
+    size: 5Gi
+
+prometheusOperator:
+  image:
+    registry: harbor.devops.local:7581
+    repository: devops/prometheus-operator
+    tag: v0.89.0
+  admissionWebhooks:
+    patch:
+      image:
+        registry: harbor.devops.local:7581
+        repository: devops/kube-webhook-certgen
+        tag: "1.7.8"
+
+kube-state-metrics:
+  image:
+    registry: harbor.devops.local:7581
+    repository: devops/kube-state-metrics
+    tag: v2.18.0
+
+prometheus-node-exporter:
+  image:
+    registry: harbor.devops.local:7581
+    repository: devops/node-exporter
+    tag: v1.10.2

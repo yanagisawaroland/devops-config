@@ -1,0 +1,116 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "myapp-business",
+    "title": "MyApp 业务监控",
+    "tags": ["myapp", "business"],
+    "timezone": "Asia/Shanghai",
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP 请求量（RPS）",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [{
+          "expr": "sum(rate(nginx_ingress_controller_requests{ingress=~\"myapp.*\"}[2m])) by (ingress)",
+          "legendFormat": "{{ingress}}",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 2,
+        "title": "HTTP 成功率",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [{
+          "expr": "sum(rate(nginx_ingress_controller_requests{ingress=~\"myapp.*\",status!~\"5..\"}[2m])) by (ingress) / sum(rate(nginx_ingress_controller_requests{ingress=~\"myapp.*\"}[2m])) by (ingress)",
+          "legendFormat": "{{ingress}} 成功率",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 3,
+        "title": "响应时间 P50/P95/P99",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(nginx_ingress_controller_response_duration_seconds_bucket{ingress=~\"myapp.*\"}[2m])) by (le, ingress))",
+            "legendFormat": "{{ingress}} P50",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(nginx_ingress_controller_response_duration_seconds_bucket{ingress=~\"myapp.*\"}[2m])) by (le, ingress))",
+            "legendFormat": "{{ingress}} P95",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(nginx_ingress_controller_response_duration_seconds_bucket{ingress=~\"myapp.*\"}[2m])) by (le, ingress))",
+            "legendFormat": "{{ingress}} P99",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "5xx 错误率",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [{
+          "expr": "sum(rate(nginx_ingress_controller_requests{ingress=~\"myapp.*\",status=~\"5..\"}[2m])) by (ingress)",
+          "legendFormat": "{{ingress}} 5xx",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 5,
+        "title": "Pod CPU 使用率",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "targets": [{
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"production\",pod=~\"myapp.*\",container!=\"\"}[2m])) by (pod)",
+          "legendFormat": "{{pod}}",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 6,
+        "title": "Pod 内存使用",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "targets": [{
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"production\",pod=~\"myapp.*\",container!=\"\"}) by (pod)",
+          "legendFormat": "{{pod}}",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 7,
+        "title": "并发连接数",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "targets": [{
+          "expr": "avg(nginx_ingress_controller_nginx_process_connections{state=\"active\"})",
+          "legendFormat": "active connections",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 8,
+        "title": "Pod 数量",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "targets": [{
+          "expr": "count(kube_pod_info{namespace=\"production\",pod=~\"myapp.*\"})",
+          "legendFormat": "运行中 Pod 数",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      }
+    ],
+    "schemaVersion": 38,
+    "version": 1
+  },
+  "overwrite": true,
+  "folderId": 0
+}

@@ -1,0 +1,94 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "goapp-business",
+    "title": "GoApp 业务监控",
+    "tags": ["goapp", "business"],
+    "timezone": "Asia/Shanghai",
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP 请求量（RPS）",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [{
+          "expr": "sum(rate(goapp_http_requests_total[2m])) by (method, path)",
+          "legendFormat": "{{method}} {{path}}",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 2,
+        "title": "HTTP 成功率",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [{
+          "expr": "sum(rate(goapp_http_requests_total{status=~\"2..\"}[2m])) / sum(rate(goapp_http_requests_total[2m]))",
+          "legendFormat": "成功率",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 3,
+        "title": "响应时间 P50/P95/P99",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(goapp_http_request_duration_seconds_bucket[2m])) by (le))",
+            "legendFormat": "P50",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(goapp_http_request_duration_seconds_bucket[2m])) by (le))",
+            "legendFormat": "P95",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(goapp_http_request_duration_seconds_bucket[2m])) by (le))",
+            "legendFormat": "P99",
+            "datasource": {"type": "prometheus", "uid": "prometheus"}
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "DB 查询量",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [{
+          "expr": "sum(rate(goapp_db_queries_total[2m])) by (operation, status)",
+          "legendFormat": "{{operation}} {{status}}",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 5,
+        "title": "Pod CPU 使用率",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "targets": [{
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"production\",pod=~\"goapp.*\",container!=\"\"}[2m])) by (pod)",
+          "legendFormat": "{{pod}}",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      },
+      {
+        "id": 6,
+        "title": "Pod 内存使用",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "targets": [{
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"production\",pod=~\"goapp.*\",container!=\"\"}) by (pod)",
+          "legendFormat": "{{pod}}",
+          "datasource": {"type": "prometheus", "uid": "prometheus"}
+        }]
+      }
+    ],
+    "schemaVersion": 38,
+    "version": 1
+  },
+  "overwrite": true,
+  "folderId": 0
+}
