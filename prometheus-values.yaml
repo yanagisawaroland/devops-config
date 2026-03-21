@@ -101,6 +101,11 @@ prometheusOperator:
         registry: harbor.devops.local:7581
         repository: devops/kube-webhook-certgen
         tag: "1.7.8"
+  prometheusConfigReloader:
+    image:
+      registry: harbor.devops.local:7581
+      repository: devops/prometheus-config-reloader
+      tag: v0.89.0
 
 kube-state-metrics:
   image:
