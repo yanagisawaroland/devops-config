@@ -1,0 +1,343 @@
+{
+  "dashboard": {
+    "id": 2550652818722816,
+    "panels": [
+      {
+        "fieldConfig": {
+          "defaults": {
+            "max": 1,
+            "min": 0,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.7
+                },
+                {
+                  "color": "red",
+                  "value": 0.85
+                }
+              ]
+            },
+            "unit": "percentunit"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "targets": [
+          {
+            "expr": "jvm_memory_heap_used_bytes{pod=~\"tomcat4.*\"} / jvm_memory_heap_max_bytes{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Heap \u4f7f\u7528\u7387"
+          }
+        ],
+        "title": "JVM Heap \u4f7f\u7528\u7387",
+        "type": "gauge"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 10,
+          "x": 6,
+          "y": 0
+        },
+        "id": 2,
+        "targets": [
+          {
+            "expr": "jvm_memory_heap_used_bytes{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Heap Used"
+          },
+          {
+            "expr": "jvm_memory_heap_max_bytes{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Heap Max"
+          },
+          {
+            "expr": "jvm_memory_heap_committed_bytes{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Heap Committed"
+          }
+        ],
+        "title": "JVM Heap \u5185\u5b58",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        },
+        "id": 3,
+        "targets": [
+          {
+            "expr": "jvm_memory_nonheap_used_bytes{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Non-Heap Used"
+          },
+          {
+            "expr": "jvm_memory_nonheap_committed_bytes{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Non-Heap Committed"
+          }
+        ],
+        "title": "Non-Heap \u5185\u5b58",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 6
+        },
+        "id": 4,
+        "targets": [
+          {
+            "expr": "rate(jvm_gc_collection_count_total{pod=~\"tomcat4.*\"}[2m])",
+            "legendFormat": "{{gc}} GC Rate"
+          }
+        ],
+        "title": "GC \u56de\u6536\u6b21\u6570",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 6
+        },
+        "id": 5,
+        "targets": [
+          {
+            "expr": "rate(jvm_gc_collection_seconds_sum{pod=~\"tomcat4.*\"}[2m])",
+            "legendFormat": "{{gc}} GC Time"
+          }
+        ],
+        "title": "GC \u8017\u65f6",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 12
+        },
+        "id": 6,
+        "targets": [
+          {
+            "expr": "jvm_threads_current{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Current"
+          },
+          {
+            "expr": "jvm_threads_peak{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Peak"
+          },
+          {
+            "expr": "jvm_threads_daemon{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Daemon"
+          }
+        ],
+        "title": "\u7ebf\u7a0b\u6570",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 12
+        },
+        "id": 7,
+        "targets": [
+          {
+            "expr": "jvm_classes_loaded{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Loaded"
+          },
+          {
+            "expr": "jvm_classes_loaded_total{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Total Loaded"
+          },
+          {
+            "expr": "jvm_classes_unloaded_total{pod=~\"tomcat4.*\"}",
+            "legendFormat": "Unloaded"
+          }
+        ],
+        "title": "\u7c7b\u52a0\u8f7d",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 12
+        },
+        "id": 8,
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"staging\",pod=~\"tomcat4.*\",container!=\"\"}[2m])) by (pod)",
+            "legendFormat": "{{pod}} CPU"
+          }
+        ],
+        "title": "Pod CPU \u4f7f\u7528\u7387",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 18
+        },
+        "id": 9,
+        "targets": [
+          {
+            "expr": "sum(rate(http_server_request_duration_seconds_count{job=\"otel-collector-metrics\"}[2m])) by (http_route)",
+            "legendFormat": "{{http_route}}"
+          }
+        ],
+        "title": "HTTP QPS\uff08OTel\uff09",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 18
+        },
+        "id": 10,
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{job=\"otel-collector-metrics\"}[2m])) by (le, http_route))",
+            "legendFormat": "P99 {{http_route}}"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{job=\"otel-collector-metrics\"}[2m])) by (le, http_route))",
+            "legendFormat": "P95 {{http_route}}"
+          }
+        ],
+        "title": "HTTP P99/P95 \u5ef6\u8fdf\uff08OTel\uff09",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        },
+        "id": 11,
+        "targets": [
+          {
+            "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=\"staging\",horizontalpodautoscaler=\"tomcat4\"}",
+            "legendFormat": "\u5f53\u524d\u526f\u672c"
+          },
+          {
+            "expr": "kube_horizontalpodautoscaler_spec_max_replicas{namespace=\"staging\",horizontalpodautoscaler=\"tomcat4\"}",
+            "legendFormat": "\u6700\u5927\u526f\u672c"
+          },
+          {
+            "expr": "kube_horizontalpodautoscaler_spec_min_replicas{namespace=\"staging\",horizontalpodautoscaler=\"tomcat4\"}",
+            "legendFormat": "\u6700\u5c0f\u526f\u672c"
+          }
+        ],
+        "title": "HPA \u526f\u672c\u6570",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        },
+        "id": 12,
+        "targets": [
+          {
+            "expr": "sum(container_memory_working_set_bytes{namespace=\"staging\",pod=~\"tomcat4.*\",container!=\"\"}) by (pod)",
+            "legendFormat": "{{pod}}"
+          }
+        ],
+        "title": "Pod \u5185\u5b58\u4f7f\u7528",
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "30s",
+    "schemaVersion": 38,
+    "tags": [
+      "tomcat4",
+      "jvm",
+      "java",
+      "otel"
+    ],
+    "timezone": "Asia/Shanghai",
+    "title": "Tomcat4 JVM \u76d1\u63a7",
+    "uid": "tomcat4-jvm",
+    "version": 2
+  },
+  "overwrite": true,
+  "folderId": 0
+}
